@@ -140,21 +140,21 @@ jobs:
           docker_hub_access_token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       ########################### Sign Docker images ###########################
-      # - name: Sign osctrl Docker containers
-      #   uses: ./.github/actions/tagged_release/docker/codesign
-      #   with:
-      #     #### Docker vars ####
-      #     osctrl_component: ${{ matrix.components }}
-      #     docker_tag: ${{ steps.vars.outputs.RELEASE_VERSION }}
-      #     docker_image_digest: ${{ steps.build_docker_containers.outputs.docker_image_digest }}
-      #     #### Dockerhub creds ####
-      #     docker_hub_org: ${{ secrets.DOCKER_HUB_ORG }}
-      #     docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-      #     docker_hub_access_token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      #     #### Codesign secrets ####
-      #     codesign_password: ${{ secrets.COSIGN_PASSWORD }}
-      #     codesign_private_key: ${{ secrets.COSIGN_PRIVATE }}
-      #     codesign_public_cert: ${{ secrets.COSIGN_PUBLIC }}
+      - name: Sign osctrl Docker containers
+        uses: ./.github/actions/tagged_release/docker/codesign
+        with:
+          #### Docker vars ####
+          osctrl_component: ${{ matrix.components }}
+          docker_tag: ${{ steps.vars.outputs.RELEASE_VERSION }}
+          docker_image_digest: ${{ steps.build_docker_containers.outputs.docker_image_digest }}
+          #### Dockerhub creds ####
+          docker_hub_org: ${{ secrets.DOCKER_HUB_ORG }}
+          docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          docker_hub_access_token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          #### Codesign secrets ####
+          codesign_password: ${{ secrets.COSIGN_PASSWORD }}
+          codesign_private_key: ${{ secrets.COSIGN_PRIVATE }}
+          codesign_public_cert: ${{ secrets.COSIGN_PUBLIC }}
 
   create_release:
     needs: [build_and_test,create_deb_packages,create_docker_images]
