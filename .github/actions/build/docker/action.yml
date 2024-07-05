@@ -79,7 +79,24 @@ runs:
         push: true
         tags: ${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}:${{ inputs.docker_tag }}
         platforms: "${{ inputs.go_os }}/${{ inputs.go_arch  }}"
+        outputs: type=image,name=osctrl-${{ inputs.osctrl_component }},push-by-digest=true,name-canonical=true,push=true
         build-args: |
           COMPONENT=${{ inputs.osctrl_component }}
           GOOS=${{ inputs.go_os }}
           GOARCH=${{ inputs.go_arch }}
+
+      ########################### Export image digest to tmp ###########################
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.create_docker_images.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      ########################### Upload digest ###########################
+      - name: Upload digest
+        uses: actions/upload-artifact@v3
+        with:
+          name: digests
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
