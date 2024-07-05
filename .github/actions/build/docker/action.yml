@@ -61,9 +61,9 @@ runs:
         username: ${{ inputs.docker_hub_username }}
         password: ${{ inputs.docker_hub_access_token }}
 
-    ########################### Setup QEMU ###########################
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
+    # ########################### Setup QEMU ###########################
+    # - name: Set up QEMU
+    #   uses: docker/setup-qemu-action@v3
 
     ########################### Setup Docker ###########################
     - name: Set up Docker Buildx
