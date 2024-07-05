@@ -84,7 +84,7 @@ runs:
         context: .
         file: ./deploy/cicd/docker/Dockerfile-osctrl-${{ inputs.osctrl_component }}
         push: true
-        tags: ${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}:${{ inputs.docker_tag }}
+        # tags: ${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}:${{ inputs.docker_tag }}
         platforms: "${{ inputs.go_os }}/${{ inputs.go_arch  }}"
         outputs: type=image,name=osctrl-${{ inputs.osctrl_component }},push-by-digest=true,name-canonical=true,push=true
         build-args: |
