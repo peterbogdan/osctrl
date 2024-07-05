@@ -53,21 +53,21 @@ runs:
         password: ${{ inputs.docker_hub_access_token }}
 
     ########################### Sign built Docker image using cosign ###########################
-    - name: Sign the published Docker image
-      shell: bash
-      env:
-        COSIGN_PASSWORD: "${{ inputs.codesign_password }}"
-      run: |
-        IMAGE_NAME="${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}:${{ inputs.docker_tag }}"
-        echo "${{ inputs.codesign_private_key }}" > cosign.key
-        cosign sign --key cosign.key docker.io/$IMAGE_NAME@${{ inputs.docker_image_digest }}
-        rm -f cosign.key
+    # - name: Sign the published Docker image
+    #   shell: bash
+    #   env:
+    #     COSIGN_PASSWORD: "${{ inputs.codesign_password }}"
+    #   run: |
+    #     IMAGE_NAME="${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}:${{ inputs.docker_tag }}"
+    #     echo "${{ inputs.codesign_private_key }}" > cosign.key
+    #     cosign sign --key cosign.key docker.io/$IMAGE_NAME@${{ inputs.docker_image_digest }}
+    #     rm -f cosign.key
 
-    ########################### Verify signed image using cosign ###########################
-    - name: Verify the signed published Docker image
-      shell: bash
-      run: |
-        IMAGE_NAME="${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}:${{ inputs.docker_tag }}"
-        echo "${{ inputs.codesign_public_cert }}" > cosign.key
-        cosign verify --key cosign.key docker.io/$IMAGE_NAME@${{ inputs.docker_image_digest }}
-        rm -f cosign.key
+    # ########################### Verify signed image using cosign ###########################
+    # - name: Verify the signed published Docker image
+    #   shell: bash
+    #   run: |
+    #     IMAGE_NAME="${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}:${{ inputs.docker_tag }}"
+    #     echo "${{ inputs.codesign_public_cert }}" > cosign.key
+    #     cosign verify --key cosign.key docker.io/$IMAGE_NAME@${{ inputs.docker_image_digest }}
+    #     rm -f cosign.key

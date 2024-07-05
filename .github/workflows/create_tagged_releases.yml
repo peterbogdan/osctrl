@@ -104,7 +104,7 @@ jobs:
       matrix:
         components: ['tls', 'admin', 'api', 'cli']
         goos: ['linux']
-        goarch: ['amd64']
+        goarch: ['amd64', 'arm64']
     steps:
       ########################### Checkout code ###########################
       - name: Checkout code
