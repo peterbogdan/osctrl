@@ -104,7 +104,7 @@ jobs:
       matrix:
         components: ['tls', 'admin', 'api', 'cli']
         goos: ['linux']
-        goarch: ['arm64']
+        goarch: ['amd64', 'arm64']
     steps:
       ########################### Checkout code ###########################
       - name: Checkout code
@@ -133,7 +133,7 @@ jobs:
           #### Build vars ####
           osctrl_component: ${{ matrix.components }}
           commit_sha: ${{ steps.vars.outputs.sha_short }}
-          docker_tag: ${{ steps.vars.outputs.RELEASE_VERSION }}
+          docker_tag: ${{ steps.vars.outputs.branch }}
           #### Dockerhub creds ####
           docker_hub_org: ${{ secrets.DOCKER_HUB_ORG }}
           docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -145,7 +145,7 @@ jobs:
         with:
           #### Docker vars ####
           osctrl_component: ${{ matrix.components }}
-          docker_tag: ${{ steps.vars.outputs.RELEASE_VERSION }}
+          docker_tag: ${{ steps.vars.outputs.branch }}
           docker_image_digest: ${{ steps.build_docker_containers.outputs.docker_image_digest }}
           #### Dockerhub creds ####
           docker_hub_org: ${{ secrets.DOCKER_HUB_ORG }}
