@@ -88,7 +88,6 @@ runs:
       uses: docker/build-push-action@v5.1.0
       id: docker_build
       with:
-        id: build
         context: .
         file: ./deploy/cicd/docker/Dockerfile-osctrl-${{ inputs.osctrl_component }}
         push: true
@@ -105,7 +104,7 @@ runs:
       shell: bash
       run: |
         mkdir -p /tmp/digests
-        digest="${{ steps.build.outputs.digest }}"
+        digest="${{ steps.docker_build.outputs.digest }}"
         echo "${digest}"
         touch "/tmp/digests/${digest#sha256:}"
 
