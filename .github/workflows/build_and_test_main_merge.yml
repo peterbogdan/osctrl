@@ -158,7 +158,7 @@ jobs:
       runs-on: ubuntu-22.04
       strategy:
         matrix:
-          images: ['osctrl-tls', 'osctrl-admin', 'osctrl-api', 'osctrl-cli']
+          components: ['tls', 'admin', 'api', 'cli']
       steps:
         - name: Download digests
           uses: actions/download-artifact@v3
@@ -173,7 +173,7 @@ jobs:
           id: meta
           uses: docker/metadata-action@v5
           with:
-            images: ${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}
+            images: ${{ secrets.DOCKER_HUB_ORG }}/osctrl-${{ matrix.components }}
             tags: |
                 type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
                 type=semver,pattern={{version}}
@@ -189,7 +189,7 @@ jobs:
           working-directory: /tmp/digests
           run: |
             docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-              $(printf '${{ matrix.image }}@sha256:%s ' *)
+              $(printf '${{ secrets.DOCKER_HUB_ORG }}/osctrl-${{ matrix.components }}@sha256:%s ' *)
 
         - name: Inspect image
           run: |
