@@ -87,6 +87,7 @@ runs:
       id: docker_build
       with:
         context: .
+        id: build
         file: ./deploy/cicd/docker/Dockerfile-osctrl-${{ inputs.osctrl_component }}
         push: true
         labels: ${{ steps.meta.outputs.labels }}
@@ -96,3 +97,19 @@ runs:
           COMPONENT=${{ inputs.osctrl_component }}
           GOOS=${{ inputs.go_os }}
           GOARCH=${{ inputs.go_arch }}
+
+      ########################### Export image digest to tmp ###########################
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      ########################### Upload digest ###########################
+      - name: Upload digest
+        uses: actions/upload-artifact@v3
+        with:
+          name: digests
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
