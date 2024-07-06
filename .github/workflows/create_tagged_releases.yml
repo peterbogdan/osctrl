@@ -185,7 +185,7 @@ jobs:
           working-directory: /tmp/digests
           run: |
               echo "digests=$(printf '%s ' *)" >> $GITHUB_OUTPUT
-              echo "tags=$(jq -cr '.tags | map("-t " + .) | join(" ")'" >> $GITHUB_OUTPUT
+              echo "tags=$(jq -cr '.tags | map(\"-t \" + .) | join(\" \")'" >> $GITHUB_OUTPUT
 
         ########################### Sign Docker images ###########################
         - name: Sign osctrl Docker containers
