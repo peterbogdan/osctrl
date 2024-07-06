@@ -109,7 +109,7 @@ runs:
     - name: Upload digest
       uses: actions/upload-artifact@v3
       with:
-        name: digests
+        name: digests-osctrl-${{ inputs.osctrl_component }}
         path: /tmp/digests/*
         if-no-files-found: error
         retention-days: 1
