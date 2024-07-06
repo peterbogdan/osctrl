@@ -64,7 +64,7 @@ runs:
           IMAGE_NAME="${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}:$tag"
           for digest in ${{ inputs.docker_image_digest }}
           do
-            cosign sign --key cosign.key docker.io/$IMAGE_NAME@$digest
+            cosign sign --key cosign.key docker.io/$IMAGE_NAME@sha256:$digest
           done
         done
         rm -f cosign.key
@@ -79,7 +79,7 @@ runs:
           IMAGE_NAME="${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}:$tag"
           for digest in ${{ inputs.docker_image_digest }}
           do
-            cosign verify --key cosign.key docker.io/$IMAGE_NAME@$digest
+            cosign verify --key cosign.key docker.io/$IMAGE_NAME@sha256:$digest
           done
         done
         rm -f cosign.key

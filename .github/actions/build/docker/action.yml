@@ -13,9 +13,6 @@ inputs:
   commit_sha:
     required: true
     description: Define the SHA1 git commit hash
-  docker_tag:
-    required: true
-    description: Define the Docker tag
   docker_hub_org:
     required: true
     description: Pass DockerHub org to action
@@ -103,7 +100,6 @@ runs:
       run: |
         mkdir -p /tmp/digests
         digest="${{ steps.docker_build.outputs.digest }}"
-        echo "${digest}"
         touch "/tmp/digests/${digest#sha256:}"
 
     ########################### Upload digest ###########################
