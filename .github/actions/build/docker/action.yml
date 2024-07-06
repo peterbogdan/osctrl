@@ -106,6 +106,7 @@ runs:
       run: |
         mkdir -p /tmp/digests
         digest="${{ steps.build.outputs.digest }}"
+        echo "${digest}"
         touch "/tmp/digests/${digest#sha256:}"
 
     ########################### Upload digest ###########################
