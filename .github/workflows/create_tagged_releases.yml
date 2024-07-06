@@ -139,22 +139,75 @@ jobs:
           docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
           docker_hub_access_token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      ########################### Sign Docker images ###########################
-      - name: Sign osctrl Docker containers
-        uses: ./.github/actions/tagged_release/docker/codesign
-        with:
-          #### Docker vars ####
-          osctrl_component: ${{ matrix.components }}
-          docker_tag: ${{ steps.vars.outputs.branch }}
-          docker_image_digest: ${{ steps.build_docker_containers.outputs.docker_image_digest }}
-          #### Dockerhub creds ####
-          docker_hub_org: ${{ secrets.DOCKER_HUB_ORG }}
-          docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          docker_hub_access_token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          #### Codesign secrets ####
-          codesign_password: ${{ secrets.COSIGN_PASSWORD }}
-          codesign_private_key: ${{ secrets.COSIGN_PRIVATE }}
-          codesign_public_cert: ${{ secrets.COSIGN_PUBLIC }}
+
+  push_docker_images:
+      needs: [create_docker_images]
+      runs-on: ubuntu-22.04
+      strategy:
+        matrix:
+          components: ['tls', 'admin', 'api', 'cli']
+      steps:
+        - name: Download digests
+          uses: actions/download-artifact@v3
+          with:
+            name: digests-osctrl-${{ matrix.components }}
+            path: /tmp/digests
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3.0.0
+
+        - name: Docker meta
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: ${{ secrets.DOCKER_HUB_ORG }}/osctrl-${{ matrix.components }}
+            labels: |
+              org.opencontainers.image.title=osctrl-${{ matrix.components }}
+            tags: |
+                type=sha,prefix=,format=short
+                type=match,pattern=v(.*),group=1
+
+
+        ########################### Log into Dockerhub ###########################
+        - name: Login to Docker Hub
+          uses: docker/login-action@v3.0.0
+          with:
+            username: ${{ secrets.DOCKER_HUB_USERNAME }}
+            password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+        - name: Create manifest list and push
+          working-directory: /tmp/digests
+          run: |
+            docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+              $(printf '${{ secrets.DOCKER_HUB_ORG }}/osctrl-${{ matrix.components }}@%s ' *)
+
+        - name: Export digests and tags for cosign
+          id: docker_vars
+          working-directory: /tmp/digests
+          run: |
+              echo "digests=$(printf '%s ' *)" >> $GITHUB_OUTPUT
+              echo "tags=$(jq -cr '.tags | map("-t " + .) | join(" ")'" >> $GITHUB_OUTPUT
+
+        ########################### Sign Docker images ###########################
+        - name: Sign osctrl Docker containers
+          uses: ./.github/actions/tagged_release/docker/codesign
+          with:
+            #### Docker vars ####
+            osctrl_component: ${{ matrix.components }}
+            docker_tags: ${{ steps.docker_vars.outputs.tags }}
+            docker_image_digests: ${{ steps.digests.outputs.digests }}
+            #### Dockerhub creds ####
+            docker_hub_org: ${{ secrets.DOCKER_HUB_ORG }}
+            docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+            docker_hub_access_token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+            #### Codesign secrets ####
+            codesign_password: ${{ secrets.COSIGN_PASSWORD }}
+            codesign_private_key: ${{ secrets.COSIGN_PRIVATE }}
+            codesign_public_cert: ${{ secrets.COSIGN_PUBLIC }}
+
+        - name: Inspect image
+          run: |
+            docker buildx imagetools inspect ${{ secrets.DOCKER_HUB_ORG }}/osctrl-${{ matrix.components }}:${{ steps.meta.outputs.version }}
 
   create_release:
     needs: [build_and_test,create_deb_packages,create_docker_images]
@@ -184,7 +237,6 @@ jobs:
       ########################### Create release ###########################
       - name: Create a new release with binaries and packages
         uses: ./.github/actions/tagged_release/github
-        id: build_docker_containers
         with:
           go_os: "${{ matrix.goos }}"
           go_arch: "${{ matrix.goarch }}"

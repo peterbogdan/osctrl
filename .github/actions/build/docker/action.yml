@@ -62,8 +62,9 @@ runs:
         images: ${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}
         labels: |
           org.opencontainers.image.title=osctrl-${{ inputs.osctrl_component }}
-        # tags: |
-        #     type=sha
+        tags: |
+            type=sha,prefix=,format=short
+            type=match,pattern=v(.*),group=1
 
     ########################### Log into Dockerhub ###########################
     - name: Login to Docker Hub
