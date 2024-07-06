@@ -137,21 +137,6 @@ jobs:
           docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
           docker_hub_access_token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      ########################### Export image digest to tmp ###########################
-      - name: Export digest
-        run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.create_docker_images.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
-
-      ########################### Upload digest ###########################
-      - name: Upload digest
-        uses: actions/upload-artifact@v3
-        with:
-          name: digests
-          path: /tmp/digests/*
-          if-no-files-found: error
-          retention-days: 1
 
   push_docker_images:
       needs: [create_docker_images]

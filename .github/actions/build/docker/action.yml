@@ -92,7 +92,7 @@ runs:
         push: true
         labels: ${{ steps.meta.outputs.labels }}
         platforms: "${{ inputs.go_os }}/${{ inputs.go_arch  }}"
-        outputs: type=image,name=osctrl-${{ inputs.osctrl_component }},push-by-digest=true,name-canonical=true,push=true
+        outputs: type=image,name=${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }},push-by-digest=true,name-canonical=true,push=true
         build-args: |
           COMPONENT=${{ inputs.osctrl_component }}
           GOOS=${{ inputs.go_os }}
