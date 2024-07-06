@@ -161,8 +161,8 @@ jobs:
             images: ${{ secrets.DOCKER_HUB_ORG }}/osctrl-${{ matrix.components }}
             labels: |
               org.opencontainers.image.title=osctrl-${{ matrix.components }}
-            tags: |
-                type=sha
+            # tags: |
+            #     type=sha
 
         ########################### Log into Dockerhub ###########################
         - name: Login to Docker Hub
