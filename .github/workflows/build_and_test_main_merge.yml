@@ -97,7 +97,7 @@ jobs:
           osquery_version: ${{ env.OSQUERY_VERSION }}
 
   create_docker_images:
-    # needs: [build_and_test]
+    needs: [build_and_test]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
