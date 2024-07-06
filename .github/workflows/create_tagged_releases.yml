@@ -146,6 +146,12 @@ jobs:
         matrix:
           components: ['tls', 'admin', 'api', 'cli']
       steps:
+        ########################### Checkout code ###########################
+        - name: Checkout code
+          uses: actions/checkout@v4.1.1
+          with:
+            fetch-depth: 2
+
         - name: Download digests
           uses: actions/download-artifact@v3
           with:
