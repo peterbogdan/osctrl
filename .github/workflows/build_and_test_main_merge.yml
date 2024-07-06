@@ -159,6 +159,8 @@ jobs:
           uses: docker/metadata-action@v5
           with:
             images: ${{ secrets.DOCKER_HUB_ORG }}/osctrl-${{ matrix.components }}
+            labels: |
+              org.opencontainers.image.title=osctrl-${{ matrix.components }}
             tags: |
                 type=sha
                 type=semver,pattern={{version}}

@@ -60,6 +60,8 @@ runs:
       uses: docker/metadata-action@v5
       with:
         images: ${{ inputs.docker_hub_org }}/osctrl-${{ inputs.osctrl_component }}
+        labels: |
+          org.opencontainers.image.title=osctrl-${{ inputs.osctrl_component }}
         tags: |
             type=sha
             type=semver,pattern={{version}}
@@ -86,8 +88,8 @@ runs:
       uses: docker/build-push-action@v5.1.0
       id: docker_build
       with:
-        context: .
         id: build
+        context: .
         file: ./deploy/cicd/docker/Dockerfile-osctrl-${{ inputs.osctrl_component }}
         push: true
         labels: ${{ steps.meta.outputs.labels }}
